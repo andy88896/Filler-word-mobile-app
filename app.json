@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Filler Word Coach",
+    "slug": "filler-word-coach",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.fillerwordcoach.app",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "This app needs speech recognition to detect filler words in your speech.",
+        "NSMicrophoneUsageDescription": "This app needs microphone access to detect filler words in your speech and provide real-time vibration feedback.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "platforms": [
+      "ios"
+    ],
+    "plugins": [
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "This app needs microphone access to detect filler words in your speech and provide real-time vibration feedback.",
+          "speechRecognitionPermission": "This app needs speech recognition to detect filler words in your speech."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b8c88692-9f5f-4d51-83ee-06f753a520bc"
+      }
+    }
+  }
+}
