@@ -30,6 +30,24 @@ export function useSpeechRecognition(
     onTranscriptRef.current = onTranscript;
   }, [onTranscript]);
 
+  // Enable haptics AFTER speech recognition has started and configured the audio session
+  // This is critical - expo-speech-recognition reconfigures the audio session when it starts,
+  // so we must enable haptics AFTER that happens, not before
+  useSpeechRecognitionEvent('start', () => {
+    if (Platform.OS === 'ios') {
+      // Small delay to ensure audio session is fully configured
+      setTimeout(() => {
+        try {
+          const success = AudioSessionConfig.enableHapticsDuringRecording();
+          console.log('Haptics enabled after speech recognition started:', success);
+          console.log('Haptics enabled status:', AudioSessionConfig.isHapticsEnabled());
+        } catch (error) {
+          console.warn('Failed to enable haptics after start:', error);
+        }
+      }, 100);
+    }
+  });
+
   // Handle partial results for real-time detection
   useSpeechRecognitionEvent('result', (event: ExpoSpeechRecognitionResultEvent) => {
     const transcript = event.results[0]?.transcript || '';
@@ -89,19 +107,6 @@ export function useSpeechRecognition(
       return;
     }
     setPermissionStatus('granted');
-
-    // Enable haptics during recording BEFORE starting speech recognition
-    if (Platform.OS === 'ios') {
-      try {
-        const success = AudioSessionConfig.enableHapticsDuringRecording();
-        console.log('Haptics during recording enabled:', success);
-        if (success) {
-          console.log('Haptics enabled status:', AudioSessionConfig.isHapticsEnabled());
-        }
-      } catch (error) {
-        console.warn('Failed to enable haptics during recording:', error);
-      }
-    }
 
     shouldBeListening.current = true;
     startListeningInternal();
