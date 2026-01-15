@@ -6,9 +6,12 @@ node_modules/
 dist/
 web-build/
 
-# Native build folders
-ios/
-android/
+# Native build folders (root level only, not module ios/ folders)
+/ios/
+/android/
+
+# But include native module ios folders
+!modules/*/ios/
 
 # Environment files
 .env

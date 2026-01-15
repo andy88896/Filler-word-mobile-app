@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import {
   useSpeechRecognitionEvent,
   ExpoSpeechRecognitionModule,
   type ExpoSpeechRecognitionResultEvent,
 } from 'expo-speech-recognition';
+import AudioSessionConfig from 'audio-session-config';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 
@@ -28,6 +29,24 @@ export function useSpeechRecognition(
   useEffect(() => {
     onTranscriptRef.current = onTranscript;
   }, [onTranscript]);
+
+  // Enable haptics AFTER speech recognition has started and configured the audio session
+  // This is critical - expo-speech-recognition reconfigures the audio session when it starts,
+  // so we must enable haptics AFTER that happens, not before
+  useSpeechRecognitionEvent('start', () => {
+    if (Platform.OS === 'ios') {
+      // Small delay to ensure audio session is fully configured
+      setTimeout(() => {
+        try {
+          const success = AudioSessionConfig.enableHapticsDuringRecording();
+          console.log('Haptics enabled after speech recognition started:', success);
+          console.log('Haptics enabled status:', AudioSessionConfig.isHapticsEnabled());
+        } catch (error) {
+          console.warn('Failed to enable haptics after start:', error);
+        }
+      }, 100);
+    }
+  });
 
   // Handle partial results for real-time detection
   useSpeechRecognitionEvent('result', (event: ExpoSpeechRecognitionResultEvent) => {
@@ -97,6 +116,15 @@ export function useSpeechRecognition(
     shouldBeListening.current = false;
     ExpoSpeechRecognitionModule.stop();
     setIsListening(false);
+
+    // Disable haptics during recording when stopping
+    if (Platform.OS === 'ios') {
+      try {
+        AudioSessionConfig.disableHapticsDuringRecording();
+      } catch (error) {
+        console.warn('Failed to disable haptics during recording:', error);
+      }
+    }
   }, []);
 
   // Stop when app goes to background
@@ -118,6 +146,13 @@ export function useSpeechRecognition(
     return () => {
       if (shouldBeListening.current) {
         ExpoSpeechRecognitionModule.stop();
+        if (Platform.OS === 'ios') {
+          try {
+            AudioSessionConfig.disableHapticsDuringRecording();
+          } catch {
+            // Ignore cleanup errors
+          }
+        }
       }
     };
   }, []);
