@@ -14,13 +14,13 @@ interface UseFillerDetectionReturn {
  */
 function triggerHaptic() {
   if (Platform.OS === 'ios') {
-    // Use notification haptic with error type for more noticeable feedback
-    AudioSessionConfig.triggerNotificationHaptic('error').catch((error) => {
-      console.warn('Notification haptic failed, trying expo-haptics:', error);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    // Use impact haptic with rigid style for sharp, noticeable feedback
+    AudioSessionConfig.triggerImpactHaptic('rigid').catch((error) => {
+      console.warn('Impact haptic failed, trying expo-haptics:', error);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     });
   } else {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
   }
 }
 
