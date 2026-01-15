@@ -14,17 +14,12 @@ interface UseFillerDetectionReturn {
  */
 function triggerHaptic() {
   if (Platform.OS === 'ios') {
-    // Try low-level AudioServices haptic first (more reliable during recording)
-    try {
-      AudioSessionConfig.triggerSystemHaptic('strong');
-      console.log('Triggered system haptic (AudioServices)');
-    } catch (error) {
-      console.warn('System haptic failed, trying expo-haptics:', error);
-      // Fallback to expo-haptics
+    // Use notification haptic with error type for more noticeable feedback
+    AudioSessionConfig.triggerNotificationHaptic('error').catch((error) => {
+      console.warn('Notification haptic failed, trying expo-haptics:', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    }
+    });
   } else {
-    // For non-iOS platforms, use expo-haptics
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
   }
 }

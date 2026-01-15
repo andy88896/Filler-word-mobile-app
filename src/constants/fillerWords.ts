@@ -1,9 +1,6 @@
 // List of filler words to detect
 export const FILLER_WORDS: string[] = [
-  'um',
-  'uh',
-  'ah',
-  'like',
+  'ummmmmm',
   'so',
   'right',
   'basically',
@@ -13,7 +10,6 @@ export const FILLER_WORDS: string[] = [
   'kind of',
   'sort of',
   'you know',
-  'i mean',
   'i think',
   'i feel',
 ];
