@@ -85,51 +85,47 @@ public class AudioSessionConfigModule: Module {
 
     /// Alternative haptic using UIImpactFeedbackGenerator (may work better in some cases)
     AsyncFunction("triggerImpactHaptic") { (style: String) in
-      await MainActor.run {
-        let impactStyle: UIImpactFeedbackGenerator.FeedbackStyle
-        switch style {
-        case "heavy":
-          impactStyle = .heavy
-        case "medium":
-          impactStyle = .medium
-        case "light":
-          impactStyle = .light
-        case "rigid":
-          impactStyle = .rigid
-        case "soft":
-          impactStyle = .soft
-        default:
-          impactStyle = .heavy
-        }
-
-        let generator = UIImpactFeedbackGenerator(style: impactStyle)
-        generator.prepare()
-        generator.impactOccurred()
-        print("AudioSessionConfig: Triggered UIImpactFeedbackGenerator with style \(style)")
+      let impactStyle: UIImpactFeedbackGenerator.FeedbackStyle
+      switch style {
+      case "heavy":
+        impactStyle = .heavy
+      case "medium":
+        impactStyle = .medium
+      case "light":
+        impactStyle = .light
+      case "rigid":
+        impactStyle = .rigid
+      case "soft":
+        impactStyle = .soft
+      default:
+        impactStyle = .heavy
       }
+
+      let generator = UIImpactFeedbackGenerator(style: impactStyle)
+      generator.prepare()
+      generator.impactOccurred()
+      print("AudioSessionConfig: Triggered UIImpactFeedbackGenerator with style \(style)")
     }
     .runOnQueue(.main)
 
     /// Trigger notification haptic (success/warning/error patterns)
     AsyncFunction("triggerNotificationHaptic") { (type: String) in
-      await MainActor.run {
-        let notificationType: UINotificationFeedbackGenerator.FeedbackType
-        switch type {
-        case "success":
-          notificationType = .success
-        case "warning":
-          notificationType = .warning
-        case "error":
-          notificationType = .error
-        default:
-          notificationType = .error
-        }
-
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(notificationType)
-        print("AudioSessionConfig: Triggered UINotificationFeedbackGenerator with type \(type)")
+      let notificationType: UINotificationFeedbackGenerator.FeedbackType
+      switch type {
+      case "success":
+        notificationType = .success
+      case "warning":
+        notificationType = .warning
+      case "error":
+        notificationType = .error
+      default:
+        notificationType = .error
       }
+
+      let generator = UINotificationFeedbackGenerator()
+      generator.prepare()
+      generator.notificationOccurred(notificationType)
+      print("AudioSessionConfig: Triggered UINotificationFeedbackGenerator with type \(type)")
     }
     .runOnQueue(.main)
   }
