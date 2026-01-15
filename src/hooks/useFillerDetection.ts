@@ -1,10 +1,32 @@
 import { useCallback, useRef } from 'react';
+import { Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { FILLER_PATTERNS } from '../constants/fillerWords';
+import AudioSessionConfig from 'audio-session-config';
 
 interface UseFillerDetectionReturn {
   checkForFillers: (transcript: string) => void;
   reset: () => void;
+}
+
+/**
+ * Trigger haptic feedback using multiple methods for maximum reliability
+ */
+function triggerHaptic() {
+  if (Platform.OS === 'ios') {
+    // Try low-level AudioServices haptic first (more reliable during recording)
+    try {
+      AudioSessionConfig.triggerSystemHaptic('strong');
+      console.log('Triggered system haptic (AudioServices)');
+    } catch (error) {
+      console.warn('System haptic failed, trying expo-haptics:', error);
+      // Fallback to expo-haptics
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+  } else {
+    // For non-iOS platforms, use expo-haptics
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  }
 }
 
 export function useFillerDetection(): UseFillerDetectionReturn {
@@ -48,8 +70,8 @@ export function useFillerDetection(): UseFillerDetectionReturn {
 
           console.log(`Filler detected: "${word}" - triggering vibration`);
 
-          // Trigger strong haptic feedback
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          // Trigger haptic feedback
+          triggerHaptic();
         }
       }
     }

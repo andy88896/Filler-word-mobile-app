@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import {
   useSpeechRecognitionEvent,
   ExpoSpeechRecognitionModule,
   type ExpoSpeechRecognitionResultEvent,
 } from 'expo-speech-recognition';
+import AudioSessionConfig from 'audio-session-config';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 
@@ -89,6 +90,19 @@ export function useSpeechRecognition(
     }
     setPermissionStatus('granted');
 
+    // Enable haptics during recording BEFORE starting speech recognition
+    if (Platform.OS === 'ios') {
+      try {
+        const success = AudioSessionConfig.enableHapticsDuringRecording();
+        console.log('Haptics during recording enabled:', success);
+        if (success) {
+          console.log('Haptics enabled status:', AudioSessionConfig.isHapticsEnabled());
+        }
+      } catch (error) {
+        console.warn('Failed to enable haptics during recording:', error);
+      }
+    }
+
     shouldBeListening.current = true;
     startListeningInternal();
   }, [startListeningInternal]);
@@ -97,6 +111,15 @@ export function useSpeechRecognition(
     shouldBeListening.current = false;
     ExpoSpeechRecognitionModule.stop();
     setIsListening(false);
+
+    // Disable haptics during recording when stopping
+    if (Platform.OS === 'ios') {
+      try {
+        AudioSessionConfig.disableHapticsDuringRecording();
+      } catch (error) {
+        console.warn('Failed to disable haptics during recording:', error);
+      }
+    }
   }, []);
 
   // Stop when app goes to background
@@ -118,6 +141,13 @@ export function useSpeechRecognition(
     return () => {
       if (shouldBeListening.current) {
         ExpoSpeechRecognitionModule.stop();
+        if (Platform.OS === 'ios') {
+          try {
+            AudioSessionConfig.disableHapticsDuringRecording();
+          } catch {
+            // Ignore cleanup errors
+          }
+        }
       }
     };
   }, []);
