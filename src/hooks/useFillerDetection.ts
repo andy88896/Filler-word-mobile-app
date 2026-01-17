@@ -10,18 +10,76 @@ interface UseFillerDetectionReturn {
 }
 
 /**
- * Trigger haptic feedback using multiple methods for maximum reliability
+ * Haptic burst configuration
+ * Fires multiple haptics in rapid succession for a stronger, more noticeable sensation
+ */
+const HAPTIC_BURST_CONFIG = {
+  // Number of haptic pulses in the burst
+  pulseCount: 5,
+  // Delay between pulses in milliseconds (50-80ms feels like one strong vibration)
+  pulseDelayMs: 60,
+};
+
+/**
+ * Trigger a single haptic pulse using the most reliable method during recording
+ */
+function triggerSingleHaptic(style: 'heavy' | 'rigid' | 'error' | 'system') {
+  if (Platform.OS !== 'ios') {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    return;
+  }
+
+  switch (style) {
+    case 'error':
+      // Notification error is one of the strongest built-in patterns
+      AudioSessionConfig.triggerNotificationHaptic('error').catch(() => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      });
+      break;
+    case 'system':
+      // AudioServicesPlaySystemSound(1519) - most reliable during recording
+      AudioSessionConfig.triggerSystemHaptic('strong');
+      break;
+    case 'heavy':
+      AudioSessionConfig.triggerImpactHaptic('heavy').catch(() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      });
+      break;
+    case 'rigid':
+    default:
+      AudioSessionConfig.triggerImpactHaptic('rigid').catch(() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+      });
+      break;
+  }
+}
+
+/**
+ * Trigger a burst of haptic feedback for maximum noticeability
+ * Fires multiple haptics in rapid succession creating a stronger sensation
+ */
+function triggerHapticBurst() {
+  const { pulseCount, pulseDelayMs } = HAPTIC_BURST_CONFIG;
+
+  // First pulse: system haptic (most reliable during recording)
+  triggerSingleHaptic('system');
+
+  // Subsequent pulses with delays
+  for (let i = 1; i < pulseCount; i++) {
+    setTimeout(() => {
+      // Alternate between system and heavy for varied sensation
+      triggerSingleHaptic(i % 2 === 0 ? 'system' : 'heavy');
+    }, pulseDelayMs * i);
+  }
+
+  console.log(`Haptic burst: ${pulseCount} pulses, ${pulseDelayMs}ms apart`);
+}
+
+/**
+ * Trigger haptic feedback - uses burst pattern for stronger sensation
  */
 function triggerHaptic() {
-  if (Platform.OS === 'ios') {
-    // Use impact haptic with rigid style for sharp, noticeable feedback
-    AudioSessionConfig.triggerImpactHaptic('rigid').catch((error) => {
-      console.warn('Impact haptic failed, trying expo-haptics:', error);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-    });
-  } else {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-  }
+  triggerHapticBurst();
 }
 
 export function useFillerDetection(): UseFillerDetectionReturn {
