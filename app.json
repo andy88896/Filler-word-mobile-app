@@ -15,7 +15,11 @@
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "This app needs speech recognition to detect filler words in your speech.",
         "NSMicrophoneUsageDescription": "This app needs microphone access to detect filler words in your speech and provide real-time vibration feedback.",
+        "NSPhotoLibraryUsageDescription": "This app does not access your photo library. This permission is required by the iOS framework.",
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "platforms": [
@@ -30,10 +34,17 @@
         }
       ]
     ],
+    "privacy": "https://gist.github.com/andy88896/8ebdbcbde80ab1ecdacdc50a885b44a8",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
     "extra": {
       "eas": {
         "projectId": "b8c88692-9f5f-4d51-83ee-06f753a520bc"
-      }
+      },
+      "privacyPolicyUrl": "https://gist.github.com/andy88896/8ebdbcbde80ab1ecdacdc50a885b44a8",
+      "termsOfServiceUrl": "https://gist.github.com/andy88896/93085b67dec68337600b52a16e74179e",
+      "eulaUrl": "https://gist.github.com/andy88896/45a553569ecc285985d688b2634651eb"
     }
   }
 }
