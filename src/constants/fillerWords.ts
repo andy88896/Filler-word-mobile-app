@@ -1,6 +1,5 @@
 // List of filler words to detect
 export const FILLER_WORDS: string[] = [
-  'ummmmmm',
   'so',
   'right',
   'basically',
