@@ -36,10 +36,6 @@
         }
       ]
     ],
-    "privacy": "https://gist.github.com/andy88896/8ebdbcbde80ab1ecdacdc50a885b44a8",
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
     "extra": {
       "eas": {
         "projectId": "b8c88692-9f5f-4d51-83ee-06f753a520bc"

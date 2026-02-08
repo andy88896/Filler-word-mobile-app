@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "audio-session-config": "file:./modules/audio-session-config",
-    "expo": "~54.0.31",
+    "expo": "~54.0.33",
     "expo-dev-client": "~6.0.20",
     "expo-haptics": "~15.0.8",
     "expo-keep-awake": "~15.0.8",
