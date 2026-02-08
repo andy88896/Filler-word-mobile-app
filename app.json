@@ -3,6 +3,7 @@
     "name": "Filler Word Coach",
     "slug": "filler-word-coach",
     "version": "1.0.0",
+    "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -12,6 +13,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.fillerwordcoach.app",
+      "icon": "./assets/icon.png",
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "This app needs speech recognition to detect filler words in your speech.",
         "NSMicrophoneUsageDescription": "This app needs microphone access to detect filler words in your speech and provide real-time vibration feedback.",
